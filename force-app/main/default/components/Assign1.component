@@ -20,21 +20,21 @@
     <apex:pageBlock id="hello1" rendered="{!IF(dataListToShow!=null,true,false)}"> 
         <div align="right" style="display: flex;
                                   justify-content:  space-between;">
-            <div>
+                 <div>
                 
            
-            <apex:commandLink action="{!URLFOR($Action[selectObj].New)}"  status="pageStatus" target="_blank" style="text-decoration:none;" >
-                <apex:commandButton value="New Record"/>
-            </apex:commandLink>
-            <apex:commandLink action="{!deleteSelected}"  style="text-decoration:none;" >
-                
-                <apex:commandButton status="pageStatus"  value="Delete Selected" styleClass="delButton" disabled="{!delCsvButttonDisable}" />
-                <apex:actionSupport event="oncomplete"   reRender="hello1" oncomplete="childCheckBox()" />
-                
-            </apex:commandLink>
-            <apex:commandLink style="text-decoration:none;"  reRender="hello1">
-                <apex:commandButton status="pageStatus"   value="Download CSV" action="{!downloadCSV}" oncomplete="down('{!JSENCODE(csvButton)}')" styleClass="delButton" disabled="{!delCsvButttonDisable}"/>
-            </apex:commandLink>
+                    <apex:commandLink action="{!URLFOR($Action[selectObj].New)}"  status="pageStatus" target="_blank" style="text-decoration:none;" >
+                        <apex:commandButton value="New Record"/>
+                    </apex:commandLink>
+                    <apex:commandLink action="{!deleteSelected}"  style="text-decoration:none;" >
+                        
+                        <apex:commandButton status="pageStatus"  value="Delete Selected" styleClass="delButton" disabled="{!delCsvButttonDisable}" />
+                        <apex:actionSupport event="oncomplete"   reRender="hello1" oncomplete="childCheckBox()" />
+                        
+                    </apex:commandLink>
+                    <apex:commandLink style="text-decoration:none;"  reRender="hello1">
+                        <apex:commandButton status="pageStatus"   value="Download CSV" action="{!downloadCSV}" oncomplete="down('{!JSENCODE(csvButton)}')" styleClass="delButton" disabled="{!delCsvButttonDisable}"/>
+                    </apex:commandLink>
                  </div>
             <apex:panelGrid >
                 <apex:repeat value="{!alphaList}" var="alph">
@@ -157,6 +157,7 @@
         height:40px;
         }
     </style>
+    
     <script>
     
        function down(csvButton){

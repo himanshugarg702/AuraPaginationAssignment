@@ -1,3 +1,9 @@
+<!--
+Name:Visualforce Page
+Description:In this visualforce page getting objects and fields related to objects and calling component.
+-->
+
+
 <apex:page controller="PaginationVisualforceClass" sidebar="false">
     <apex:actionStatus id="pageStatus">
         <apex:facet name="start">
@@ -29,10 +35,10 @@
         background-position: center;
         opacity: 1;
         }
-        <!-- .data{
-width:100%;
-overflow-x: scroll;
-}
+        <!--.data{
+            width:100%;
+            overflow-x: scroll;
+        }
 .column{
 width:10%;
 }-->
@@ -41,6 +47,7 @@ width:10%;
         height:40px;
         }
     </style>
+    
     
     <apex:form id="form" style="background: white; border: none; width:100%; overflow:auto;">
         <apex:pageBlock >
@@ -53,13 +60,10 @@ width:10%;
                 </apex:selectList>
                 <apex:commandButton action="{!resetValueAction}" value="Reset" reRender="form,comp" disabled="{!reset}" status="pageStatus" style="margin-left: 2%; padding: 0.5rem " />
             </div>
-            <!--   <apex:actionSupport reRender="form,he,comp" oncomplete="objectChange()" />-->
             <div style="border:transparent;">
-                <apex:pageBlock rendered="{!IF(selectedObject!=NULL,true,false)}" id="obj2"   >
+                <apex:pageBlock rendered="{!IF(selectedObject!=NULL,true,false)}" id="obj2">
                     <div style=" background: white !important;  border: none;  justify-content: space-around; display: flex; flex-direction: row;">
                         <div style="display: flex; flex-direction: column;">
-                            
-                        
                         <apex:outputLabel value="{!selectedObject}: Fields" style="font-size: 1rem; font-weight: bold;"/>           
                         <apex:selectList value="{!selectedField}" styleClass="fields" multiselect="true">
                             <apex:selectOptions value="{!results}"/>
@@ -69,16 +73,12 @@ width:10%;
                             <apex:commandButton value="Add" action="{!SelectedFieldsToShow}" status="pageStatus"  reRender="form" style="height: 2rem; width: 3rem;  " disabled="{!add}" />
                             <apex:commandButton value="Remove" action="{!SelectedFieldRemove}" disabled="{!remove}" reRender="form" status="pageStatus" style="height: 2rem; width: 3rem; " />
                         </div>
-                        <!--  <apex:actionSupport reRender="form,he,comp" oncomplete="cmp()" />-->
-                         <div style="display: flex;
-    flex-direction: column;">
-                        <apex:outputLabel value="Selected: Fields" style="font-size: 1rem; font-weight: bold;" />           
-                        <apex:selectList value="{!removeFields}"  styleClass="fields" multiselect="true">
-                            <apex:selectOptions value="{!result2}"/>
-                        </apex:selectList>
-                        </div>
-                        <!--<apex:commandButton value="Process" action="{!ProcessFields}" oncomplete="updateUI()" disabled="{!remove}" reRender="he,hello" status="pageStatus"/>-->
-                      
+                         <div style="display: flex; flex-direction: column;">
+                            <apex:outputLabel value="Selected: Fields" style="font-size: 1rem; font-weight: bold;" />           
+                            <apex:selectList value="{!removeFields}"  styleClass="fields" multiselect="true">
+                                <apex:selectOptions value="{!result2}"/>
+                            </apex:selectList>
+                        </div>                      
                         <apex:commandButton value="Process" action="{!processToComp}" disabled="{!remove}" reRender="he,hello,comp" status="pageStatus" oncomplete="callCmp();" style="height: 2rem; width: 3rem; margin-top: 8rem; "  />      
                         
                     </div>

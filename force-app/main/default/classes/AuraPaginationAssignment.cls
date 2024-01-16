@@ -36,16 +36,17 @@ public with sharing class AuraPaginationAssignment {
         return null;
     }
     @AuraEnabled
-    public static Map<String,String> allFields(String selectedObject){
-        Map<String,String> allFields = new Map<String,String>();
+    public static List<String> allFields(String selectedObject){
+        Map<String,String> listOfField = new Map<String,String>();
         if (selectedObject != null) {
             for (SObjectField sField : Schema.getGlobalDescribe().get(selectedObject).getDescribe().fields.getMap().values()) {
                 DescribeFieldResult res = sField.getDescribe();
                 if (res.isUpdateable()||res.isCreateable()||res.isCustom()) {
-                    allFields.put(res.getLabel(),res.getName());
+                    listOfField.put(res.getName(),res.getLabel());
                 }
             }
         }
-        return allFields;
+        return listOfField.values();
     }
+    // public 
 }

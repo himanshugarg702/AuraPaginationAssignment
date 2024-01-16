@@ -1,41 +1,51 @@
 <aura:component controller="AuraPaginationAssignment" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
     <!-- Attributes -->
     <aura:attribute name="allObject" type="List" access="PRIVATE"/>
-    <aura:attribute name="allField" type="List" access="PRIVATE"/>
+    <aura:attribute name="allField" type="List"  description="fields" />
     <aura:attribute name="selectedObject" type="String" access="PRIVATE"/>
-    <aura:attribute name="selectedField" type="String" access="PRIVATE"/>
+    <aura:attribute name="selectedField" type="List" default="[]" />
+    <aura:attribute name="fieldTable" type="List" default="[]" description="Genre Picklist Values"/>
 
     <!--Handlers-->
     <aura:handler name="init" value="{!this}" action="{!c.init}" />
-    
-<div class="modal-header slds-modal__header slds-size_1-of-1">
-    <h4 class="title slds-text-heading--medium">All Object Respective Fields</h4>
+    <div class="modal-header slds-modal__header slds-size_1-of-1">
+       <h4 class="title slds-text-heading--medium">All Object Respective Fields</h4>
     </div>
-
     <div class="slds-modal__content slds-p-around--x-small slds-align_absolute-center slds-size_1-of-1 slds-is-relative">
         <form class="slds-form--stacked">
         Select any Object and get All the Fields...
         </form>
     </div>
-    <div class="slds-grid slds-gutters slds-p-around_medium"> 
-         <div class="slds-col slds-size_1-of-2"> 
-        <span><lightning:select name="objects" label="Select a Object" aura:id="objectId" value="{!v.selectedObject}" onchange="{!c.handleChange}">
-        <option value="">choose one...</option>
-        <aura:iteration items="{!v.allObject}" var="object">
-        <option text="{!object.value}" value="{!object.key}" selected="{!object.selected}"/>
-        </aura:iteration>
-        </lightning:select>
-        </span>
+  
+    <div style="display: flex; flex-direction:column;" class="slds-grid slds-gutters slds-p-around_medium"> 
+        <div class="slds-col slds-size_1-of-2"> 
+            <span>
+                <lightning:select name="objects" label="Select a Object" aura:id="objectId" value="{!v.selectedObject}" onchange="{!c.handleChange}">
+                    <option value="">choose one...</option>
+                    <aura:iteration items="{!v.allObject}" var="object">
+                        <option text="{!object.value}" value="{!object.key}" selected="{!object.selected}"/>
+                    </aura:iteration>
+                </lightning:select>
+            </span>
         </div>
         <aura:if isTrue="{!v.selectedObject}">
-        <div class="slds-col slds-size_1-of-2">
-        <span><lightning:select name="allField" label="Here are the Fields" aura:id="fieldId" value="{!v.selectedField}">
-        <aura:iteration items="{!v.allField}" var="field">
-        <option text="{!field}" value="{!field}" selected="{!field.selected}"/>
-        </aura:iteration>
-        </lightning:select>
-        </span>
-        </div>
+            <div class="slds-col slds-size_1-of-2">
+                <span>
+                   <lightning:dualListbox aura:id="fieldId"
+                        name="Genre"
+                        label="Select Genre"
+                        sourceLabel="Available Genre"
+                        selectedLabel="Selected Genre"
+                        options="{!v.allField }"
+                        onchange="{!c.handleToChangeSelectedField}"/>
+                        <div style="margin-top: 2%;">
+                            <lightning:button  
+                                variant="brand" 
+                                label="Process" 
+                                onclick="{!c.processTable}" />
+                        </div>
+                </span>
+            </div>
         </aura:if>
     </div>
 </aura:component>

@@ -95,7 +95,6 @@ public class PaginationVisualforceClass {
     public PageReference SelectedFieldsToShow(){
     
         remove=false;
-        System.debug(selectedField);
         for(Integer i=0;i<selectedField.size();i++){
             result2.add(new SelectOption(selectedField.get(i),selectedField.get(i)));
             for(String key : resultsFields.keySet()) {
@@ -115,7 +114,6 @@ public class PaginationVisualforceClass {
                 }
             }
         }
-        System.debug(results);
         valuesSendComponent=new list<String>();
         labelSendComponent=new list<String>();
         for(String key : selectedResultsFields.values()) {
@@ -127,7 +125,6 @@ public class PaginationVisualforceClass {
         if(results.size()==0){
             add=true;
         }
-        System.debug(valuesSendComponent);
         selectedField=null;
         return null;
     }
@@ -169,8 +166,8 @@ public class PaginationVisualforceClass {
         if(results.size()>0){
             add=false;
         }
-        valuesSendComponent=new list<String>();
-        labelSendComponent=new list<String>();
+        valuesSendComponent = new list<String>();
+        labelSendComponent = new list<String>();
         for(String key : selectedResultsFields.values()) {
             valuesSendComponent.add(key);
         }

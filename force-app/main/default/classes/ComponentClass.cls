@@ -18,7 +18,6 @@ public class ComponentClass {
     private String selectId='Select ';   // temp variable 
     public list<Wrapper> dataForManipulatingDataList{get;set;}     // parent varibale for showing all records 
     public String caseCon{get;set;}
-    
     public String query{get;set;}
     public Integer ResultSize {get;set;}   // how many records are come
     public Integer PageSize {get;set;}
@@ -30,12 +29,6 @@ public class ComponentClass {
     public list<sObject> sobj{get;set;}  // getting all records 
     public Integer ofPage{get;set;}
     public list<String> alphaList{get;set;}    // showing list of alphabetical character
-    //     get{                                                                                                                   
-    //         alphaList = new list<String>{'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','Others','All'};
-    //             return alphaList;    
-    //     }
-    //     set;
-    // }
     public Boolean delCsvButttonDisable{get;set;}   //boolean variable making CSV button disable
     public list<String> fieldsToShowRecord{get;set;}   // list for showing record
     public String sortDirection = 'ASC';  // temp variable for default value
@@ -87,12 +80,9 @@ public class ComponentClass {
         delCsvButttonDisable=true;
        
         selectedListCSV=new list<String>();
-        tempFieldList=new list<String>();
-        //check='name';
-       
+        tempFieldList=new list<String>();       
         fieldsToShowRecord=new list<String>();
-        
-        System.debug(nameFieldValues);
+
         PageNumber=1;
         showData=new list<SelectOption>();
         selectObj=null;
@@ -100,9 +90,7 @@ public class ComponentClass {
         dataListToShow=new list<Wrapper>();
     }
     public void checking(){
-        //mainPage();
         fieldsToShowRecord=new list<String>();
-        //selectObj=null;
         nameFieldValues=new list<String>();
       
     }
@@ -116,10 +104,9 @@ public class ComponentClass {
     public void mainPage(){
         caseCon='';
         if(selectObj=='Case'||selectObj=='Contact'){
-    //        caseCon=selectObj;                          //
+            caseCon=selectObj;                          //
         }
         query='';
-        //  nameFieldValues=new list<String>();
         selectedListCSV=new list<String>();
         dataListToShow.clear();
         dataForManipulatingDataList.clear();
@@ -155,11 +142,8 @@ public class ComponentClass {
         }
         
         for(Integer j=0;j<tempQuery.size();j++){
-            System.debug(j);
             if(tempQuery.get(j)==name){
-                System.debug(j);
                 tempQuery.remove(j);
-                //  tempFieldList.remove(j);
                 break;
             }
             selectedListCSV.add(tempQuery.get(j));
@@ -219,7 +203,6 @@ public class ComponentClass {
      Return Type: Null
 **/
     public void alphaSearch(){
-        System.debug('hello'+alphaSearchConct+query);
         String name='Name';
         if(selectObj=='Case'){
             name='CaseNumber';
@@ -264,12 +247,6 @@ public class ComponentClass {
             
             PageNumber=0;
         }
-       /* if(Math.mod(ResultSize,LimitSize)==0){
-            ofPage=(Integer)Math.Floor(ResultSize/LimitSize);
-        }
-        else{
-            ofPage=(Integer)Math.CEIL(ResultSize/LimitSize)+1;
-        }*/
     }
        /** 
      Name: seeDataAccordingToRecordPerPage,
@@ -292,7 +269,6 @@ public class ComponentClass {
             LimitSize=20;
         }
         PageNumber=1;
-        //    PageNumber=(Integer)Math.ceil(ResultSize / LimitSize);
         dataListToShow.clear();
         if(tempBool==true){
             
@@ -320,13 +296,6 @@ public class ComponentClass {
             
             PageNumber=0;
         }
-    /*    if(Math.mod(ResultSize,LimitSize)==0){
-            ofPage=(Integer)Math.Floor(ResultSize/LimitSize);
-        }
-        else{
-            ofPage=(Integer)Math.CEIL(ResultSize/LimitSize)+1;
-        }*/
-        
     }
            /** 
      Name: firstPage,
@@ -356,10 +325,7 @@ public class ComponentClass {
      Return Type: Null
 **/
     public void nextPage(){
-        // if(PageNumber!=(Integer)Math.ceil(ResultSize / LimitSize)){
-        PageNumber++;
-        //   }
-        
+        PageNumber++;        
         valueSet();
     }
       /** 
@@ -369,8 +335,6 @@ public class ComponentClass {
      Return Type: Null
 **/
     public void lastPage(){
-      //  System.debug(ResultSize/LimitSize);
-        //PageNumber=(Integer)Math.ceil(ResultSize / LimitSize);
         if(Math.mod(ResultSize,LimitSize)==0){
             PageNumber=(Integer)Math.Floor(ResultSize/LimitSize);
         }
@@ -424,7 +388,6 @@ public class ComponentClass {
      Return Type: Null
 **/
     public void  deleteMode(){
-        System.debug('check');
         Integer i=0;
         try {
             accId=ApexPages.currentPage().getParameters().get('del'); 
@@ -438,7 +401,6 @@ public class ComponentClass {
             }
             // dataForManipulatingDataList.remove(i);
         } catch(System.DMLException e) {
-            System.debug(e);
             ApexPages.addmessage(new ApexPages.message(ApexPages.severity.ERROR,'Cannot be deleted this account because the account have associtated opportunities'));
         }      
     }
@@ -458,11 +420,9 @@ public class ComponentClass {
                     ApexPages.addmessage(new ApexPages.message(ApexPages.severity.CONFIRM,' deleted account Successfully'));
                     
                 }
-                //i++;
             }
         }
         catch(System.DMLException e) {
-            System.debug(e);
             ApexPages.addmessage(new ApexPages.message(ApexPages.severity.ERROR,'Cannot be deleted this account because the account have associtated opportunities'));
         }        
     }
@@ -476,7 +436,6 @@ public class ComponentClass {
     public void viewData(){
         sortFullExp = sortExpression  + ' ' + sortDirection;
         order = ' order by ' +sortFullExp ;
-        //query the database based on the sort expression
         sobj=new list<sObject>();
         sobj = Database.query(query+ order);
         dataListToShow.clear();
