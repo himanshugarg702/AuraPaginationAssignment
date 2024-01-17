@@ -41,13 +41,69 @@
             if(state==="SUCCESS"||state==="DRAFT") {
                 var result=response.getReturnValue();
                 var listOfFields=[];
-                for (var i = 0; i < result.length; i++) {
+                for(var key in result)  {
                     listOfFields.push({
-                        label: result[i],
-                        value: result[i]
-                    });
+                        label:result[key],
+                        value:key});
                 }
                 component.set("v.allField",listOfFields);
+            }
+            else if(state=="INCOMPLETE")    {
+                console.log("No response from server or client is offline.");
+            }
+            else if(state=="ERROR") {
+                if(errors)  {
+                    if(errors[0]&&errors[0].message)  {
+                        console.log("Error Message: "+ errors[0].message);
+                    }
+                }
+                else{
+                    console.log("Unknown Error");
+                }
+            }
+        })
+        $A.enqueueAction(action);
+    },
+    getRecordsFromServer:function(component, pageNumber, pageSize){
+        var action=component.get("c.dataForTable");
+        console.log('hello data');
+        console.log(component.get('v.PageNumber'));
+
+        action.setParams({
+            selectedObject:component.get('v.selectedObject'),
+            selectedField:component.get('v.selectedField'),
+            "pageNumber": pageNumber,
+            "pageSize": pageSize
+        })
+        action.setCallback(this,function(response)  {
+            var state = response.getState();
+            if(state==="SUCCESS"||state==="DRAFT") {
+            //     var resultData = result.getReturnValue();
+            //     component.set("v.ContactList", resultData.contactList);
+            //     component.set("v.PageNumber", resultData.pageNumber);
+            //     component.set("v.TotalRecords", resultData.totalRecords);
+            //     component.set("v.RecordStart", resultData.recordStart);
+            //     component.set("v.RecordEnd", resultData.recordEnd);
+            //     component.set("v.TotalPages", Math.ceil(resultData.totalRecords / pageSize));
+            // }
+            console.log('hello data2');
+
+                var result=response.getReturnValue();
+                // var listOfFields=[];
+                // for (var i = 0; i < result.length; i++) {
+                //     listOfFields.push({
+                //         label: result[i],
+                //         value: result[i]
+                //     });
+                // }
+                console.log(result.totalRecords);
+                component.set("v.sObjectList",result.sobj);
+                component.set("v.PageNumber",result.pageNumber);
+                component.set("v.TotalPages",Math.ceil(result.totalRecords / pageSize));
+                component.set("v.TotalRecords",result.totalRecords);
+                console.log('hello data3',Math.ceil(result.totalRecords / pageSize));
+                console.log( component.get("v.sObjectList"));
+
             }
             else if(state=="INCOMPLETE")    {
                 console.log("No response from server or client is offline.");
