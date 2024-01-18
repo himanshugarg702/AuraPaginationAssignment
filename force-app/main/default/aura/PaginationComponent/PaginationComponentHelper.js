@@ -7,6 +7,7 @@
                 var result=response.getReturnValue();
                 var listOfObjects=[];
                 for(var key in result)  {
+                   
                     listOfObjects.push({key:key,value:result[key]});
                 }
                 // listOfObjects = listOfObjects.sort(function (a, b) {
@@ -31,7 +32,6 @@
         $A.enqueueAction(action);
     },
     getAllFields:function(component,event,helper){
-        // console.log('check himanshu');
         var action=component.get("c.allFields");
         action.setParams({
             selectedObject:component.get('v.selectedObject'),
@@ -46,7 +46,13 @@
                         label:result[key],
                         value:key});
                 }
-                component.set("v.allField",listOfFields);
+                // JSON.parse(listOfFields);
+                 console.log(listOfFields);
+                // var tempField=Json.stringify(listOfFields);
+                
+                // console.log(JSON.stringify(listOfFields),'hello');
+                component.set("v.allField",JSON.parse(JSON.stringify(listOfFields)));
+                // console.log('all fields ',JSON.stringify(component.get("v.allField")));
             }
             else if(state=="INCOMPLETE")    {
                 console.log("No response from server or client is offline.");
@@ -66,9 +72,6 @@
     },
     getRecordsFromServer:function(component, pageNumber, pageSize){
         var action=component.get("c.dataForTable");
-        console.log('hello data');
-        console.log(component.get('v.PageNumber'));
-
         action.setParams({
             selectedObject:component.get('v.selectedObject'),
             selectedField:component.get('v.selectedField'),
@@ -78,16 +81,6 @@
         action.setCallback(this,function(response)  {
             var state = response.getState();
             if(state==="SUCCESS"||state==="DRAFT") {
-            //     var resultData = result.getReturnValue();
-            //     component.set("v.ContactList", resultData.contactList);
-            //     component.set("v.PageNumber", resultData.pageNumber);
-            //     component.set("v.TotalRecords", resultData.totalRecords);
-            //     component.set("v.RecordStart", resultData.recordStart);
-            //     component.set("v.RecordEnd", resultData.recordEnd);
-            //     component.set("v.TotalPages", Math.ceil(resultData.totalRecords / pageSize));
-            // }
-            console.log('hello data2');
-
                 var result=response.getReturnValue();
                 // var listOfFields=[];
                 // for (var i = 0; i < result.length; i++) {
@@ -96,14 +89,16 @@
                 //         value: result[i]
                 //     });
                 // }
-                console.log(result.totalRecords);
+               
                 component.set("v.sObjectList",result.sobj);
                 component.set("v.PageNumber",result.pageNumber);
                 component.set("v.TotalPages",Math.ceil(result.totalRecords / pageSize));
                 component.set("v.TotalRecords",result.totalRecords);
-                console.log('hello data3',Math.ceil(result.totalRecords / pageSize));
-                console.log( component.get("v.sObjectList"));
-
+                if(result.sobj.length==0){
+                    component.set("v.selectedField", []);
+                    component.set("v.tableColumns", []);
+                    alert("data not found!");
+                }
             }
             else if(state=="INCOMPLETE")    {
                 console.log("No response from server or client is offline.");
@@ -120,5 +115,18 @@
             }
         })
         $A.enqueueAction(action);
+    },
+    sortData : function(component,fieldName,sortDirection){
+        var data = component.get("v.sObjectList");
+        //function to return the value stored in the field
+        var key = function(a) { return a[fieldName]; }
+        var reverse = sortDirection == 'asc' ? 1: -1;
+         
+        data.sort(function(a,b){
+                var a = key(a) ? key(a) : '';
+                var b = key(b) ? key(b) : '';
+                return reverse * ((a>b) - (b>a));
+            });
+        component.set("v.sObjectList",data);
     }
 })
