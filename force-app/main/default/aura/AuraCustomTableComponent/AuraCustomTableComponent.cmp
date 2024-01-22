@@ -1,4 +1,4 @@
-<aura:component controller="AuraPaginationAssignment" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+<aura:component controller="CustomDataTableAuraPagination" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
     <!-- Attributes -->
     <aura:attribute name="allObject" type="List" access="PRIVATE"/>
     <aura:attribute name="allField" type="List"  description="fields"  default="[]" />
@@ -11,11 +11,11 @@
     <aura:attribute name="PageNumber" type="integer" default="1"/>
     <aura:attribute name="TotalPages" type="integer" default="0"/>
     <aura:attribute name="TotalRecords" type="integer" default="0"/>
+    <aura:attribute name="isSortAsc" type="Boolean" default="true"/>
+    <aura:attribute name="selectedSortingField" type="String" default="Name"/>
     <aura:attribute name="sortBy" type="String"/>
     <aura:attribute name="sortDirection" type="String"/>
     <aura:attribute name="loaded" type="Boolean" default="true" />
-    <aura:attribute name="maintainCheckBox" type="List" default="[]" />
-
 
     <!-- <lightning:button label="Toggle" variant="brand" onclick="{! c.handleClick }" /> -->
 
@@ -29,7 +29,6 @@
             </aura:set>
         </aura:if>
     </div> -->
-  
     <div style="display: flex; flex-direction:column;" class="slds-grid slds-gutters slds-p-around_medium"> 
         <div class="slds-col slds-size_1-of-2"> 
             <span>
@@ -67,21 +66,74 @@
     <aura:if isTrue="{! !empty(v.tableColumns)}">
         <div>
             <p style="font-size: 2rem;" >Total Records : {!v.TotalRecords}</p>
-            <div style="height: 300px">
+            <div style="width:100%; height:220px; overflow:auto; ">
+                <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                    <thead>
+                      <tr >
+                        <div class="slds-form-element">
+                            <div class="slds-form-element_control">
+                              <label class="slds-checkbox">
+                                  <ui:inputCheckbox change="{!c.selectDeselectAll}"/>
+                                <span class="slds-checkbox_faux"/>
+                                <span class="slds-form-element_label"/>
+                                </label>
+                            </div>
+                          </div>
+                <aura:iteration items="{!v.tableColumns}" var="con"> 
+                        <th scope="col">
+                            <!-- data-tit = "{!con}" -->
+                            <a class="slds-truncate"  title="{!con}" onclick="{!c.handleChangeSorting}">{!con}</a>
+                            <!-- <aura:if isTrue="{!v.selectedSortingField}">
+                                <aura:if isTrue="{!v.isSortAsc}">
+                                    &#9650;
+                                    <aura:set attribute="else">
+                                        &#9660;
+                                    </aura:set>
+                                </aura:if> 
+                            </aura:if> -->
+                        </th>
+                </aura:iteration> 
+            <!-- </a> -->
+                </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.sObjectList}" var="record">
+                        <tr class="slds-hint-parent">
+                            <th  scope="row">
+                                <div class="slds-form-element">
+                                   <div class="slds-form-element_control">
+                                     <label class="slds-checkbox">
+                                         <ui:inputCheckbox value="{!record.check}"/>
+                                         <span class="slds-checkbox_faux"/>
+                                       <span class="slds-form-element_label"/>
+                                     </label>
+                                   </div>
+                                 </div>
+                               </th>
+                            <aura:iteration items="{!v.tableColumns}" var="field">
+                                <c:ChildComponentForRecord record='{!record}' fieldName='{!field}'/>
+                            </aura:iteration>
+                        </tr>
+                    </aura:iteration>
+                </tbody>
+                </table>
                 <!-- <lightning:layout multipleRows="true" horizontalAlign="center">
                     <lightning:layoutItem padding="around-small" size="12">         -->
-                <lightning:datatable
+                <!-- <lightning:datatable
                     data="{! v.sObjectList }"
                     columns="{! v.tableColumns }"
                     keyField="id"
+                    onrowaction="{! c.handleRowAction }"
                     onheaderaction="{! c.handleHeaderAction }"
                     sortedBy="{!v.sortBy}"
                     sortedDirection="{!v.sortDirection}"
-                    onsort="{!c.handleSort}"/>
+                    onsort="{!c.handleSort}"/> -->
                 <!-- </lightning:layoutItem>       
             </lightning:layout>    -->
             </div>
         </div>
+    </aura:if>
+    <aura:if isTrue="{! !empty(v.tableColumns)}">
         <div style="display: flex; flex-direction: row; justify-content: space-between;">
             <div class="slds-float_right" style="font-size: 2rem;"  >
                 <ui:inputSelect aura:id="pageSize" label="Display Records Per Page: " change="{!c.pageRecordChange}">
@@ -102,8 +154,9 @@
                 
             </div>
             <div>
-                <p style="font-size: 2rem;" >Page {!v.PageNumber} of {!v.TotalPages}</p>
+                <p style="font-size: 2rem;">Page {!v.PageNumber} of {!v.TotalPages}</p>
             </div>
         </div>
-    </aura:if>
+        </aura:if>
+   
 </aura:component>

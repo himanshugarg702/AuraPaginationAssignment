@@ -1,11 +1,14 @@
+/*
+Name:BatchApexClass
+Description:In this implemented Batch class for with update status field on contact object and schedule mail with csv file.
+*/
 public with sharing class BatchApexClass implements Schedulable,
-Database.Batchable<sObject>, Database.Stateful{
-    // List<Contact> tempCon=new List<Contact>();
-    public String csvString='';
+Database.Batchable<sObject>, Database.Stateful {
+    public String csvString=''; // string variable for getting all fields
         public Database.QueryLocator start(Database.BatchableContext bc) {
             String query='SELECT Id, LastName, Status__c,Description,Birthdate,LastCURequestDate FROM Contact WHERE CreatedDate = Today';
             csvString='Id, LastName, Status__c,Birthdate,Description,LastCURequestDate\n';
-            return Database.getQueryLocator(query);//sockel injection//chron expression
+            return Database.getQueryLocator(query);
         }
         public void execute(Database.BatchableContext bc, List<Contact> conList) {
             List<Contact> contacts=new List<Contact>();
@@ -14,7 +17,9 @@ Database.Batchable<sObject>, Database.Stateful{
                 csvString=csvString+con.id+','+con.LastName+','+con.Status__c+','+con.Birthdate+','+(con.Description).escapeCsv()+','+con.LastCURequestDate+'\n';
                 contacts.add(con);
             }
-            update contacts;
+            if(contacts.size()>0) {
+                update contacts;
+            }
         }
         public void finish(Database.BatchableContext bc) {
             User current_user=[SELECT Email FROM User WHERE Id= :UserInfo.getUserId()];

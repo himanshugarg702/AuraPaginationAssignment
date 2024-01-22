@@ -18,15 +18,12 @@
         </apex:facet>
     </apex:actionStatus>
     <apex:pageBlock id="hello1" rendered="{!IF(dataListToShow!=null,true,false)}"> 
-        <div align="right" style="display: flex;
-                                  justify-content:  space-between;">
+        <div align="right" style="display: flex;  justify-content:  space-between;">
                  <div>
-                
-           
                     <apex:commandLink action="{!URLFOR($Action[selectObj].New)}"  status="pageStatus" target="_blank" style="text-decoration:none;" >
                         <apex:commandButton value="New Record"/>
                     </apex:commandLink>
-                    <apex:commandLink action="{!deleteSelected}"  style="text-decoration:none;" >
+                    <apex:commandLink action="{!deleteSelected}"  style="text-decoration:none;" status="pageStatus" >
                         
                         <apex:commandButton status="pageStatus"  value="Delete Selected" styleClass="delButton" disabled="{!delCsvButttonDisable}" />
                         <apex:actionSupport event="oncomplete"   reRender="hello1" oncomplete="childCheckBox()" />
@@ -38,15 +35,15 @@
                  </div>
             <apex:panelGrid >
                 <apex:repeat value="{!alphaList}" var="alph">
-                    <apex:commandLink value="{!alph} |" action="{!alphaSearch}" reRender="he,hello,c,pageNum,table2,n,lp,p,fp,msg" status="pageStatus" oncomplete="childCheckBox()" style="color: darkcyan;" >
+                    <apex:commandLink value="{!alph} |" action="{!alphaSearch}" reRender="hello1,he,hello,c,pageNum,table2,n,lp,p,fp,msg" status="pageStatus" oncomplete="childCheckBox()" style="color: darkcyan;" >
                         <apex:param name="a" value="{!alph}" assignTo="{!alphaSearchConct}" />
                     </apex:commandLink>
                 </apex:repeat>
             </apex:panelGrid>
         </div>
-        <apex:outputPanel style="width:1620px; height:220px; overflow:auto; " layout="block" >
+        <apex:outputPanel style="width:1620px; height:220px; overflow:auto; " layout="block"  rendered="{!IF(hideTableOnTheBasisOfData==true,false,true)}"  >
             <!-- <apex:actionSupport action="{!changeList}"/>-->
-            <apex:pageBlockTable value="{!dataListToShow}" var="rec" id="hello"  styleClass="datatable" rendered="{!IF(dataListToShow!=0,true,false)}" >
+            <apex:pageBlockTable value="{!dataListToShow}" var="rec" id="hello"  styleClass="datatable">
                 <apex:column headerValue="Name">
                     <apex:facet name="header">
                         <apex:inputCheckbox styleClass="parent" onchange="parentCheckBox(this);"/>
@@ -60,7 +57,8 @@
                     <apex:commandLink value="Edit" status="pageStatus" action="{!URLFOR($Action[selectObj].Edit, rec.acc.Id)}" target="_blank" style="color: darkcyan;" >
                         
                     </apex:commandLink>&nbsp;|&nbsp;
-                    <apex:commandLink onclick="return confirm('Are you sure?');" action="{!deleteMode}" value="Delete"  status="pageStatus" reRender="hello" style="color: darkcyan;">
+                    <!-- onclick="return confirm('Are you sure?');" -->
+                    <apex:commandLink  action="{!deleteMode}" value="Delete"  status="pageStatus" reRender="hello" style="color: darkcyan;">
                         <apex:param name="del" value="{!rec.acc.id}" assignTo="{!accId}"  />
                         <apex:actionSupport event="oncomplete" action="{!mainPage}" reRender="hello1" />
                     </apex:commandLink>
@@ -73,11 +71,10 @@
                     </apex:column>
                 </a>
                 <a>
-                    <apex:column headerValue="{!selectObj } Name" styleClass="column" rendered="{!IF(objectNameField==true,true,false)}">
-                        
+                    <apex:column headerValue="{!selectObj } Name" styleClass="column" rendered="{!IF(objectNameField==true,true,false)}">    
                         <apex:commandLink value="{!rec.acc['name']}"  onclick="window.open('https://briskminds-b3-dev-ed.develop.my.salesforce.com/{!rec.acc.Id}','_blank');" status="pageStatus" style="color: darkcyan;" > 
                             <apex:facet name="header">   
-                                <apex:commandLink action="{!ViewData}" value="Name{!IF(sortExpression=='name',IF(sortDirection='ASC','▲','▼'),'')}" reRender="hello" >
+                                <apex:commandLink action="{!ViewData}" value="Name{!IF(sortExpression=='name',IF(sortDirection='ASC','▲','▼'),'')}" reRender="hello">
                                     <apex:param name="bb" value="Name" assignTo="{!sortExpression}" />
                                 </apex:commandLink>
                             </apex:facet>
@@ -98,34 +95,36 @@
                 
             </apex:pageBlockTable>
         </apex:outputPanel>        
-        <table style="width: 100%" id="table2">
-            <tr style="display: flex;  flex-direction: row; justify-content: space-between;">
-            <td align="right">
-                Records per page:
-                <apex:selectList value="{!selectedOption}" size="1">
-                    <apex:actionSupport event="onchange" action="{!seeDataAccordingToRecordPerPage}" oncomplete="childCheckBox()" status="pageStatus" reRender="he,hello,table2,c,pageNum,n,lp,p,fp"/>
-                    <apex:selectOption itemValue="5" itemLabel="5"/>
-                    <apex:selectOption itemValue="10" itemLabel="10"/>
-                    <apex:selectOption itemValue="15" itemLabel="15"/>
-                    <apex:selectOption itemValue="20" itemLabel="20"/>  
-                </apex:selectList>
-                  <apex:actionSupport event="onchange" oncomplete="childCheckBox()" reRender="hello1" /> 
-            </td>
-            <td align="center" >
-                <apex:commandButton value="First Page" oncomplete="childCheckBox()" id="fp"  rerender="table2,hello,pageNum,n,lp,p,fp" action="{!firstPage}" status="pageStatus" disabled="{!PageNumber<=1}" />
-                <apex:commandButton value="Previous" oncomplete="childCheckBox()" id="p" rerender="table2,hello,pageNum,n,lp,p,fp" action="{!previousPage}" status="pageStatus" disabled="{!PageNumber<=1}"  />
-                <apex:commandButton value="Next" oncomplete="childCheckBox()" id="n"  rerender="table2,hello,pageNum,n,fp,p,lp" action="{!nextPage}" status="pageStatus" disabled="{!PageNumber==CEILING(ResultSize / LimitSize)}"/>
-                <apex:commandButton value="Last Page" oncomplete="childCheckBox()" id="lp"  rerender="table2,hello,pageNum,n,lp,p,fp" action="{!lastPage}" status="pageStatus" disabled="{!PageNumber==CEILING(ResultSize / LimitSize)}"/>
-            </td>
-            <td>
-                Page:<apex:inputText value="{!PageNumber}" id="pageNum" style="width:1rem"  >
-                <apex:actionSupport event="onchange" action="{!valueSet}" status="pageStatus"  />
-                </apex:inputText>
-                <apex:outputText value=" of {!CEILING(ResultSize / LimitSize)}" id="c" />
-            </td>
-            </tr>
-         <apex:actionFunction oncomplete="childCheckBox()" name="cid" reRender="hello1" /> 
-        </table>        
+        <apex:outputPanel rendered="{!IF(hideTableOnTheBasisOfData==true,false,true)}">
+            <table style="width: 100%" id="table2">
+                <tr style="display: flex;  flex-direction: row; justify-content: space-between;">
+                <td align="right">
+                    Records per page:
+                    <apex:selectList value="{!selectedOption}" size="1">
+                        <apex:actionSupport event="onchange" action="{!seeDataAccordingToRecordPerPage}" oncomplete="childCheckBox()" status="pageStatus" reRender="he,hello,table2,c,pageNum,n,lp,p,fp"/>
+                        <apex:selectOption itemValue="5" itemLabel="5"/>
+                        <apex:selectOption itemValue="10" itemLabel="10"/>
+                        <apex:selectOption itemValue="15" itemLabel="15"/>
+                        <apex:selectOption itemValue="20" itemLabel="20"/>  
+                    </apex:selectList>
+                    <apex:actionSupport event="onchange" oncomplete="childCheckBox()" reRender="hello1" /> 
+                </td>
+                <td align="center" >
+                    <apex:commandButton value="First Page" oncomplete="childCheckBox()" id="fp"  rerender="table2,hello,pageNum,n,lp,p,fp" action="{!firstPage}" status="pageStatus" disabled="{!PageNumber<=1}" />
+                    <apex:commandButton value="Previous" oncomplete="childCheckBox()" id="p" rerender="table2,hello,pageNum,n,lp,p,fp" action="{!previousPage}" status="pageStatus" disabled="{!PageNumber<=1}"  />
+                    <apex:commandButton value="Next" oncomplete="childCheckBox()" id="n"  rerender="table2,hello,pageNum,n,fp,p,lp" action="{!nextPage}" status="pageStatus" disabled="{!PageNumber==CEILING(ResultSize / LimitSize)}"/>
+                    <apex:commandButton value="Last Page" oncomplete="childCheckBox()" id="lp"  rerender="table2,hello,pageNum,n,lp,p,fp" action="{!lastPage}" status="pageStatus" disabled="{!PageNumber==CEILING(ResultSize / LimitSize)}"/>
+                </td>
+                <td>
+                    Page:<apex:inputText value="{!PageNumber}" id="pageNum" style="width:1rem"  >
+                    <apex:actionSupport event="onchange" action="{!valueSet}" status="pageStatus"  />
+                    </apex:inputText>
+                    <apex:outputText value=" of {!CEILING(ResultSize / LimitSize)}" id="c" />
+                </td>
+                </tr>
+            <apex:actionFunction oncomplete="childCheckBox()" name="cid" reRender="hello1" /> 
+            </table>        
+        </apex:outputPanel>
     </apex:pageBlock>
    
     <!--action="{!firstPage}"-->

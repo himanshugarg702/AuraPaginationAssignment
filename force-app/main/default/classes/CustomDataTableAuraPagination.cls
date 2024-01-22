@@ -1,15 +1,4 @@
-/**
-Name:AuraPaginationAssignment
-Description:In this class implemented getting objects from custom label and implmeneted fields functionality depending on the object and getting records 
-            on the basis of selected field
-**/
-public with sharing class AuraPaginationAssignment {
-    /** 
-     Name: allObject,
-     description: getting object from schema class,
-     Param:null,
-     Return Type:Map<String,String>
-    **/
+public with sharing class CustomDataTableAuraPagination {
     @AuraEnabled 
     public static Map<String,String> allObject() {
         Map<String,String> listOfObject = new Map<String,String>();
@@ -45,7 +34,6 @@ public with sharing class AuraPaginationAssignment {
     **/
     @AuraEnabled
     public static Map<String,String> allFields(String selectedObject) {
-
         Map<String,String> listOfField = new Map<String,String>();
         // List<String> tempLabelName=new List<String>();
         // List<String> tempApiName=new List<String>();
@@ -73,7 +61,7 @@ public with sharing class AuraPaginationAssignment {
      Return Type:WrapperClass
     **/
     @AuraEnabled
-    public static WrapperClass dataForTable(String selectedObject,List<String> selectedField,Integer pageNumber,Integer pageSize){
+    public static list<WrapperClass> dataForTable(String selectedObject,List<String> selectedField,Integer pageNumber,Integer pageSize){
 
             String allFieldsForQuery = '';
             for(Integer i = 0;i<selectedField.size();i++){
@@ -84,28 +72,42 @@ public with sharing class AuraPaginationAssignment {
                 allFieldsForQuery+=selectedField.get(i)+',';
                }
             }
-            AggregateResult[] tr = Database.query('SELECT count(id)total from '+selectedObject);
+            // AggregateResult[] tr = Database.query('SELECT count(id)total from '+selectedObject);
             Integer offset = (pageNumber-1)*pageSize;
             list<sObject> sobjectRecords = Database.query('SELECT '+allFieldsForQuery+' FROM '+selectedObject + ' LIMIT '+pageSize +' OFFSET '+offset);
-            WrapperClass wrapperVariableForGettingSobjectRecords = new WrapperClass();
-            wrapperVariableForGettingSobjectRecords.pageSize = pageSize;
-            wrapperVariableForGettingSobjectRecords.pageNumber = pageNumber;
-            wrapperVariableForGettingSobjectRecords.totalRecords = (Integer)tr[0].get('total');
-            wrapperVariableForGettingSobjectRecords.sobj = sobjectRecords;
+            List<WrapperClass> wrapperVariableForGettingSobjectRecords = new List<WrapperClass>();
+
+            for(sObject a:sobjectRecords) {
+                wrapperVariableForGettingSobjectRecords.add(new WrapperClass(a));
+            }
+            // wrapperVariableForGettingSobjectRecords.sobj = sobjectRecords;
             return wrapperVariableForGettingSobjectRecords;
     }
+    // public static list<Wrapper> tempData(List<sObject> temp){
+    //     List<Wrapper> tempData=new List<Wrapper>();
+    //     for(sObject a:temp) {
+    //         tempData.add(new Wrapper(a));
+    //     }
+    //     return tempData;
+    // }
     /** 
      Name: WrapperClass,
      description: class for making dynamically sObject records
     **/
+    @AuraEnabled
+    public static Integer getTotalRecords(String selectedObject){
+        AggregateResult[] tr = Database.query('SELECT count(id)total from '+selectedObject);
+        Integer totalRecords=(Integer)tr[0].get('total');
+        return totalRecords;
+    }
     public class WrapperClass{
         @AuraEnabled
-        public Integer pageSize{get;set;}
+        public sObject sobj{get;set;}
         @AuraEnabled
-        public Integer pageNumber{get;set;}
-        @AuraEnabled
-        public Integer totalRecords{get;set;}
-        @AuraEnabled
-        public List<sObject> sobj{get;set;}
+        public boolean check{get;set;}
+        public WrapperClass(sObject sobj){
+            this.sobj=sobj;
+            this.check=false;
+        }
     }
 }

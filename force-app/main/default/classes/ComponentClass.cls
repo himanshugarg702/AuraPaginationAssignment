@@ -35,7 +35,7 @@ public class ComponentClass {
     private String sortExp = 'name';   // temp value for making default
     public String order='';// temp value for making default
     public string sortFullExp='';// temp value for making default
-    // public string columnSort{get;set;}
+    public Boolean hideTableOnTheBasisOfData{get;set;}
     public String sortExpression
     {
         get
@@ -72,6 +72,7 @@ public class ComponentClass {
     public list<String> tempFieldList{get;set;}
     // constructor
     public ComponentClass(){
+        hideTableOnTheBasisOfData=false;
         alphaList=new list<String>();
         String characterList= System.Label.AlphaList;
         for(String str:characterList.split(',')){
@@ -160,20 +161,20 @@ public class ComponentClass {
             }
             i++;
         }
-        
-        
         query+=' from '+' '+selectObj+' ';  
         sobj=new list<sObject>();
         sobj=Database.query(query);
        
         dataListToShow.clear();
-        for(sObject a:sobj){
+        for(sObject a:sobj) {
             dataForManipulatingDataList.add(new Wrapper(a));
             dataListToShow.add(new Wrapper(a));
         }
-        
+        hideTableOnTheBasisOfData=false;
         resultSize=dataListToShow.size();
-
+        if(ResultSize==0){
+            hideTableOnTheBasisOfData=true;
+        }
         changeList();
      
     }
@@ -242,7 +243,9 @@ public class ComponentClass {
             }
             dataListToShow.add(alphaTemp.get(i));
         }
+        hideTableOnTheBasisOfData=false;
         if(resultSize==0){
+            hideTableOnTheBasisOfData=true;
             ApexPages.addmessage(new ApexPages.message(ApexPages.severity.CONFIRM,' Data Not Found'));
             
             PageNumber=0;
@@ -390,16 +393,20 @@ public class ComponentClass {
     public void  deleteMode(){
         Integer i=0;
         try {
+            // List<sObjet
+            List<sObject> tempListToDelete=new List<sObject>();
             accId=ApexPages.currentPage().getParameters().get('del'); 
             for(Wrapper a:dataListToShow){
                 if(accId==a.acc.id){
-                    delete a.acc;
+                    tempListToDelete.add(a.acc);
                     ApexPages.addmessage(new ApexPages.message(ApexPages.severity.CONFIRM,' deleted account Successfully'));
                     break;
                 }
                 i++;
             }
-            // dataForManipulatingDataList.remove(i);
+            if(tempListToDelete.size()>0){
+                delete tempListToDelete;
+            }
         } catch(System.DMLException e) {
             ApexPages.addmessage(new ApexPages.message(ApexPages.severity.ERROR,'Cannot be deleted this account because the account have associtated opportunities'));
         }      
@@ -414,12 +421,16 @@ public class ComponentClass {
     public void deleteSelected(){
         
         try{
+            List<sObject> tempListToDelete=new List<sObject>();
             for(Wrapper a:dataListToShow){
                 if(a.check==true){
-                    delete a.acc;
+                    tempListToDelete.add(a.acc);
+                    // delete a.acc;
                     ApexPages.addmessage(new ApexPages.message(ApexPages.severity.CONFIRM,' deleted account Successfully'));
-                    
                 }
+            }
+            if(tempListToDelete.size()>0){
+                delete tempListToDelete;
             }
         }
         catch(System.DMLException e) {
