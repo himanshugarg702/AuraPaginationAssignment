@@ -80,10 +80,20 @@
     handleChangeSorting:function(component,event,helper){
         var selectedItem = event.currentTarget;
         var selectedField = selectedItem.dataset.tit;
-        console.log(selectedField);
-        console.log(selectedItem);
         component.set("v.selectedSortingField", selectedField);
-        helper.sortData(component);
+        var sortDirection=component.get("v.sortBy");
+        var TotalPages = component.get("v.TotalPages");  
+        var pageNumber = component.get("v.PageNumber");  
+        var pageSize = component.find("pageSize").get("v.value");
+        pageNumber=TotalPages;
+        if(sortDirection=='Asc'){
+            sortDirection='Desc';
+        }
+        else{
+            sortDirection='Asc';
+        }
+        component.set("v.sortBy",sortDirection);
+        helper.getRecordsFromServer(component, pageNumber, pageSize);
     },
     // handleSort: function(component,event,helper){
     //     var sortBy = event.getParam("fieldName");

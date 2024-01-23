@@ -1,3 +1,8 @@
+/**
+Name:CustomDataTableAuraPaginationAssignment
+Description:In this class implemented getting objects from custom label and implmeneted fields functionality depending on the object and getting records 
+            on the basis of selected field
+**/
 public with sharing class CustomDataTableAuraPagination {
     @AuraEnabled 
     public static Map<String,String> allObject() {
@@ -61,7 +66,7 @@ public with sharing class CustomDataTableAuraPagination {
      Return Type:WrapperClass
     **/
     @AuraEnabled
-    public static list<WrapperClass> dataForTable(String selectedObject,List<String> selectedField,Integer pageNumber,Integer pageSize){
+    public static list<WrapperClass> dataForTable(String selectedObject,List<String> selectedField,Integer pageNumber,Integer pageSize, String sortingField, String sortBy){
 
             String allFieldsForQuery = '';
             for(Integer i = 0;i<selectedField.size();i++){
@@ -74,7 +79,7 @@ public with sharing class CustomDataTableAuraPagination {
             }
             // AggregateResult[] tr = Database.query('SELECT count(id)total from '+selectedObject);
             Integer offset = (pageNumber-1)*pageSize;
-            list<sObject> sobjectRecords = Database.query('SELECT '+allFieldsForQuery+' FROM '+selectedObject + ' LIMIT '+pageSize +' OFFSET '+offset);
+            list<sObject> sobjectRecords = Database.query('SELECT '+allFieldsForQuery+' FROM '+selectedObject + ' ORDER BY '+sortingField+' '+sortBy+' '+ 'LIMIT '+pageSize +' OFFSET '+offset);
             List<WrapperClass> wrapperVariableForGettingSobjectRecords = new List<WrapperClass>();
 
             for(sObject a:sobjectRecords) {

@@ -1,23 +1,22 @@
 <aura:component controller="CustomDataTableAuraPagination" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
     <!-- Attributes -->
-    <aura:attribute name="allObject" type="List" access="PRIVATE"/>
-    <aura:attribute name="allField" type="List"  description="fields"  default="[]" />
-    <aura:attribute name="selectedObject" type="String" access="PRIVATE"/>
-    <aura:attribute name="selectedField" type="List" default="[]" />
-    <aura:attribute name="selectedFieldsValue" type="List" default="[]" />
+    <aura:attribute name="allObject" type="List" access="PRIVATE"/>   <!-- list for getting all object from apex -->
+    <aura:attribute name="allField" type="List"  description="fields"  default="[]" />  <!--list for getting all field depending on the object-->
+    <aura:attribute name="selectedObject" type="String" access="PRIVATE"/>  <!--variable for getting field on the basis on selected object from apex-->
+    <aura:attribute name="selectedField" type="List" default="[]" />  <!-- list of getting selected field in second pickList  -->
+    <aura:attribute name="selectedFieldsValue" type="List" default="[]" />  <!-- list of getting selected field value for query in second pickList -->
 
-    <aura:attribute name="tableColumns" type="List" default="[]" />
-    <aura:attribute name="sObjectList" type="sObject[]"  />
-    <aura:attribute name="PageNumber" type="integer" default="1"/>
-    <aura:attribute name="TotalPages" type="integer" default="0"/>
-    <aura:attribute name="TotalRecords" type="integer" default="0"/>
-    <aura:attribute name="isSortAsc" type="Boolean" default="true"/>
-    <aura:attribute name="selectedSortingField" type="String" default="Name"/>
-    <aura:attribute name="sortBy" type="String"/>
-    <aura:attribute name="sortDirection" type="String"/>
-    <aura:attribute name="loaded" type="Boolean" default="true" />
+    <aura:attribute name="tableColumns" type="List" default="[]" />  <!--for which which field have to show in table on the click of process button-->
+    <aura:attribute name="sObjectList" type="sObject[]"  />  <!-- records depending on the object selected-->
+    <aura:attribute name="PageNumber" type="integer" default="1"/>  <!--  page number-->
+    <aura:attribute name="TotalPages" type="integer" default="0"/>  <!--Total pages-->
+    <aura:attribute name="TotalRecords" type="integer" default="0"/>  <!--Total records-->
+    <aura:attribute name="isSortAsc" type="Boolean" default="true"/>  <!---->
+    <aura:attribute name="selectedSortingField" type="String" default="Name"/>  <!--which field we are slected for sorting-->
+    <aura:attribute name="sortBy" type="String" default="Asc" />  <!--sortBy of sorting like asc or desc-->
+    <aura:attribute name="sortDirection" type="String"  />  <!---->
+    <aura:attribute name="loaded" type="Boolean" default="true" />  <!---->
 
-    <!-- <lightning:button label="Toggle" variant="brand" onclick="{! c.handleClick }" /> -->
 
    
     <!--Handlers-->
@@ -82,7 +81,7 @@
                 <aura:iteration items="{!v.tableColumns}" var="con"> 
                         <th scope="col">
                             <!-- data-tit = "{!con}" -->
-                            <a class="slds-truncate"  title="{!con}" onclick="{!c.handleChangeSorting}">{!con}</a>
+                            <a class="slds-truncate" data-tit = "{!con}" title="{!con}" onclick="{!c.handleChangeSorting}">{!con}</a>
                             <!-- <aura:if isTrue="{!v.selectedSortingField}">
                                 <aura:if isTrue="{!v.isSortAsc}">
                                     &#9650;

@@ -10,9 +10,6 @@
                    
                     listOfObjects.push({key:key,value:result[key]});
                 }
-                // listOfObjects = listOfObjects.sort(function (a, b) {
-                //     return a.val.localeCompare( b.val );
-                // });
                 component.set("v.allObject",listOfObjects);
             }
             else if(state=="INCOMPLETE")    {
@@ -46,13 +43,8 @@
                         label:result[key],
                         value:key});
                 }
-                // JSON.parse(listOfFields);
-                 console.log(listOfFields);
-                // var tempField=Json.stringify(listOfFields);
-                
-                // console.log(JSON.stringify(listOfFields),'hello');
+                 console.log(listOfFields);                
                 component.set("v.allField",JSON.parse(JSON.stringify(listOfFields)));
-                // console.log('all fields ',JSON.stringify(component.get("v.allField")));
             }
             else if(state=="INCOMPLETE")    {
                 console.log("No response from server or client is offline.");
@@ -76,19 +68,15 @@
             selectedObject:component.get('v.selectedObject'),
             selectedField:component.get('v.selectedField'),
             "pageNumber": pageNumber,
-            "pageSize": pageSize
+            "pageSize": pageSize,
+            sortingField:component.get('v.selectedSortingField'),
+            sortBy:component.get('v.sortBy')
+
         })
         action.setCallback(this,function(response)  {
             var state = response.getState();
             if(state==="SUCCESS"||state==="DRAFT") {
                 var result=response.getReturnValue();
-                // var listOfFields=[];
-                // for (var i = 0; i < result.length; i++) {
-                //     listOfFields.push({
-                //         label: result[i],
-                //         value: result[i]
-                //     });
-                // }
                 var recordsData=[];
                for(var key of result){
                 recordsData.push(key.sobj)
@@ -96,8 +84,6 @@
                 component.set("v.sObjectList",recordsData);
                 console.log(result,'resultdata');
                 component.set("v.PageNumber",pageNumber);
-                // component.set("v.TotalPages",Math.ceil(result. / pageSize));
-                // component.set("v.TotalRecords",result.totalRecords);
                 if(recordsData.length==0){
                     component.set("v.selectedField", []);
                     component.set("v.tableColumns", []);
