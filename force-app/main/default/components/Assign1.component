@@ -58,7 +58,7 @@
                         
                     </apex:commandLink>&nbsp;|&nbsp;
                     <!-- onclick="return confirm('Are you sure?');" -->
-                    <apex:commandLink  action="{!deleteMode}" value="Delete"  status="pageStatus" reRender="hello" style="color: darkcyan;">
+                    <apex:commandLink action="{!deleteMode}" value="Delete"  status="pageStatus" reRender="hello" style="color: darkcyan;">
                         <apex:param name="del" value="{!rec.acc.id}" assignTo="{!accId}"  />
                         <apex:actionSupport event="oncomplete" action="{!mainPage}" reRender="hello1" />
                     </apex:commandLink>

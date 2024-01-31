@@ -1,3 +1,3 @@
 <aura:application extends="force:slds" >
-    <c:PaginationComponent  />
+    <c:KanbanViewAssignment  />
 </aura:application>

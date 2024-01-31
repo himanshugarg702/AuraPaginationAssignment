@@ -14,8 +14,11 @@
     <aura:attribute name="isSortAsc" type="Boolean" default="true"/>  <!---->
     <aura:attribute name="selectedSortingField" type="String" default="Name"/>  <!--which field we are slected for sorting-->
     <aura:attribute name="sortBy" type="String" default="Asc" />  <!--sortBy of sorting like asc or desc-->
+    <aura:attribute name="recordId" type="List"  /> 
     <aura:attribute name="sortDirection" type="String"  />  <!---->
     <aura:attribute name="loaded" type="Boolean" default="true" />  <!---->
+    <aura:attribute name="recordsCheckBoxMaintain" type="Map" default="{}" />  <!---->
+
 
 
    
@@ -72,7 +75,7 @@
                         <div class="slds-form-element">
                             <div class="slds-form-element_control">
                               <label class="slds-checkbox">
-                                  <ui:inputCheckbox change="{!c.selectDeselectAll}"/>
+                                  <ui:inputCheckbox aura:id="selectAllCheckBox" value="{!v.recordsCheckBoxMaintain}"  change="{!c.selectDeselectAll}"/>
                                 <span class="slds-checkbox_faux"/>
                                 <span class="slds-form-element_label"/>
                                 </label>
@@ -81,7 +84,7 @@
                 <aura:iteration items="{!v.tableColumns}" var="con"> 
                         <th scope="col">
                             <!-- data-tit = "{!con}" -->
-                            <a class="slds-truncate" data-tit = "{!con}" title="{!con}" onclick="{!c.handleChangeSorting}">{!con}</a>
+                            <a class="slds-truncate" data-tit = "{!con.value}" title="{!con.label}" onclick="{!c.handleChangeSorting}">{!con.label}</a>
                             <!-- <aura:if isTrue="{!v.selectedSortingField}">
                                 <aura:if isTrue="{!v.isSortAsc}">
                                     &#9650;
@@ -110,7 +113,7 @@
                                  </div>
                                </th>
                             <aura:iteration items="{!v.tableColumns}" var="field">
-                                <c:ChildComponentForRecord record='{!record}' fieldName='{!field}'/>
+                                <c:ChildComponentForRecord record='{!record}' fieldName='{!field.value}'/>
                             </aura:iteration>
                         </tr>
                     </aura:iteration>

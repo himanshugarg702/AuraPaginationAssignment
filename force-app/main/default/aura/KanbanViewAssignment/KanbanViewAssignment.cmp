@@ -1,0 +1,150 @@
+<aura:component controller="KanBanViewAssignment" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    <aura:attribute name="allObject" type="List" access="PRIVATE"/>   <!-- list for getting all object from apex -->
+    <aura:attribute name="allField" type="List"  description="fields"  default="[]" />  <!--list for getting all field depending on the object-->
+    <aura:attribute name="selectedObject" type="String" access="PRIVATE"/>  <!--variable for getting field on the basis on selected object from apex-->
+    <aura:attribute name="selectedField" type="List" default="[]" />  <!-- list of getting selected field in second pickList  -->
+    <aura:attribute name="requiredOptions" type="List" default="[Name]" />  <!-- list of getting selected field in second pickList  -->
+
+    <aura:attribute name="selectedFieldsValue" type="String"  />  <!-- list of getting selected field value for query in second pickList -->
+    <aura:attribute name="allPickListField" type="List"  description="fields"   access="PRIVATE" />
+    <aura:attribute name="selectedPickListField" type="String"  access="PRIVATE"/>  <!-- list of getting selected field value for query in second pickList -->
+    <aura:attribute name="totalCountValue" type="Integer"  default="0"/>  <!-- list of getting selected field value for query in second pickList -->
+
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:attribute name="kanbanData" type="KanBanViewAssignment.KanbanViewWrapperClass"/>
+    <!-- <div class="exampleHolder">
+        <aura:if isTrue="{! v.loaded }">
+            <aura:set attribute="else">
+                <lightning:spinner alternativeText="Loading" />
+            </aura:set>
+        </aura:if>
+    </div> -->
+    <div style="display: flex; flex-direction:column;" class="slds-grid slds-gutters slds-p-around_medium"> 
+        <div class="slds-col slds-size_1-of-2"> 
+            <span>
+                <lightning:select name="objects" label="Select a Object" aura:id="objectId" value="{!v.selectedObject}" onchange="{!c.handleChange}">
+                    <option value="">choose one...</option>
+                    <aura:iteration items="{!v.allObject}" var="object">
+                        <option text="{!object.value}" value="{!object.key}" selected="{!object.selected}"/>
+                    </aura:iteration>
+                </lightning:select>
+            </span>
+        </div>
+        <aura:if isTrue="{!v.selectedObject}">
+            <div class="slds-col slds-size_1-of-2">
+                <span>
+                    <lightning:select name="colorId" label="Select a Field For Showing KanBan:" aura:id="colorId" value="{!v.selectedPickListField}" onchange="{!c.handleToGetPickListField}">
+                        <aura:iteration items="{!v.allPickListField}" var="option">
+                            <option text="{!option.value}" value="{!option.key}" selected="{!option.selected}" aura:id="pickListApi" data-tit="{!option.value}" />
+                        </aura:iteration>
+                    </lightning:select>
+
+                    <aura:if isTrue="{! !empty(v.allField)}">
+                        <lightning:dualListbox aura:id="fieldId"
+                        name="Genre"
+                        label="Select Genre"
+                        sourceLabel="Available Genre"
+                        selectedLabel="Selected Genre"
+                        options="{!v.allField }"
+                        requiredOptions="{!v.requiredOptions}"
+                        max="3"
+                        value="{!v.selectedFieldsValue}"
+                        onchange="{!c.handleToChangeSelectedField}"/>
+                        <div style="margin-top: 2%;">
+                            <lightning:button  
+                                variant="brand" 
+                                label="Process" 
+                                onclick="{!c.processTable}" />
+                        </div>
+                    </aura:if>
+                </span>
+            </div>
+        </aura:if>
+    </div>
+    <aura:if isTrue="{! !empty(v.allField)}">
+        <div class="slds-grid">
+        <aura:iteration var="pickVal" items="{!v.kanbanData.pickValues}">
+           
+
+    <!-- <div style="padding:0.5rem;">
+     
+            <div class="slds-path">
+                <div class="slds-grid slds-path__track  slds-grid_vertical">
+                  <div class="slds-grid slds-path__scroller-container">
+                    <div class="slds-path__scroller" role="application">
+                      <div class="slds-path__scroller_inner">
+                        <ul class="slds-path__nav" role="listbox" aria-orientation="horizontal">
+                          <li class="slds-path__item slds-is-current slds-is-active" role="presentation">
+                            <a aria-selected="true" class="slds-path__link" href="javascript:void(0);" id="path-1" role="option" tabindex="0">
+                              <span class="slds-path__stage">
+                              </span>
+                              <span class="slds-path__title">{!pickVal}</span>
+                            </a>
+                          </li>
+                        </ul>
+                    </div>
+                  </div>
+                </div>      
+                </div>
+                </div> -->
+            <!-- <div class="stageContainer" style="{!'width:calc(100vw/'+(v.kanbanData.pickValues.length+0.5)+')'}">  -->
+                <div class="slds-path">
+                    <div class="slds-grid slds-path__track">
+                      <div class="slds-grid slds-path__scroller-container">
+                        <div class="slds-path__scroller">
+                          <div class="slds-path__scroller_inner">
+                            <ul class="slds-path__nav" role="listbox" aria-orientation="horizontal" aria-labelledby="slds-path__stage-name">
+                              <li class="slds-path__item slds-is-current slds-is-active" role="presentation">
+                                <a aria-selected="true" class="slds-path__link" href="#" id="path-1" role="option" tabindex="0">
+                                  <span class="slds-path__stage">
+                                   
+                                  </span>
+                                  <span class="slds-path__title">{!pickVal} {!v.totalCountValue}</span>
+                                </a>
+                              </li>
+                              </ul>
+                 <!-- <div class="slds-grid slds-grid_vertical">
+                    <div>
+                        <div class="slds-media slds-no-space slds-has-divider_bottom-space slds-media_center" style="{!'width:calc(100vw/'+(v.kanbanData.pickValues.length+1)+')'}">
+                            <div class="slds-media__body">
+                                <h1 class="slds-page-header__title slds-align-middle slds-truncate" title="{!pickVal}">{!pickVal}{!v.totalCountValue}</h1>
+                            </div>
+                        </div>
+                    </div>
+                </div> -->
+                <ul ondrop="{!c.drop}" ondragover="{!c.allowDrop}" class="slds-has-dividers_around-space dropZone" data-Pick-Val="{!pickVal}" style="height:70vh;overflow-y:auto;">
+                    <aura:iteration var="objRecord" items="{!v.kanbanData.records}">
+
+                        <c:KanBanChildComponent record = '{!objRecord}' pickValue = '{!pickVal}' apiFieldName="{!v.selectedPickListField}" totalCount ="{!v.totalCountValue}" selectedFields="{!v.selectedField}" />
+                        <!-- <aura:if isTrue="{!pickVal == objRecord.Active__c}"> 
+                            <li class="slds-item slds-m-around_small" draggable="true" ondragstart="{!c.drag}" id="{!objRecord.Id}">
+                                <article class="slds-tile slds-tile_board">
+                                    <h3 class="slds-truncate" title="{!objRecord.Name}">
+                                        <a href="javascript:void(0);" onclick="{!c.doView}">
+                                            <span class="slds-truncate" id="{!objRecord.Id}">{!objRecord.Name}</span>
+                                        </a>
+                                    </h3>
+                                    <div class="slds-tile__detail slds-text-body_small">
+                                         <p class="slds-text-heading_medium">Amount: ${!objRecord.Amount}</p> -->
+                                        <!-- <p class="slds-truncate" title="{!objRecord.Account.Name}">
+                                            <a href="javascript:void(0);" onclick="{!c.doView}">
+                                                <span class="slds-truncate" id="{!objRecord.AccountId}">{!objRecord.Account.Name}</span>
+                                            </a>
+                                        </p> -->
+                                        <!-- <p class="slds-truncate" title="{!'Closing ' +objRecord.CloseDate}">Closing {!'Closing ' +objRecord.CloseDate}</p> 
+                                    </div>
+                                </article>
+                            </li>
+                         </aura:if>  -->
+                    </aura:iteration>
+                </ul>
+            </div>
+            </div>
+            </div>
+            </div>
+            </div>
+      
+        </aura:iteration>
+    </div>
+       </aura:if>
+</aura:component>

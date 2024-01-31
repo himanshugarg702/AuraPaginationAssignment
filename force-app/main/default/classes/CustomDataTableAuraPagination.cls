@@ -1,5 +1,6 @@
+
 /**
-Name:CustomDataTableAuraPaginationAssignment
+Name:CustomDataTableAuraPagination
 Description:In this class implemented getting objects from custom label and implmeneted fields functionality depending on the object and getting records 
             on the basis of selected field
 **/
@@ -40,23 +41,15 @@ public with sharing class CustomDataTableAuraPagination {
     @AuraEnabled
     public static Map<String,String> allFields(String selectedObject) {
         Map<String,String> listOfField = new Map<String,String>();
-        // List<String> tempLabelName=new List<String>();
-        // List<String> tempApiName=new List<String>();
         if (selectedObject != null) {
             for (SObjectField sField : Schema.getGlobalDescribe().get(selectedObject).getDescribe().fields.getMap().values()) {
                 DescribeFieldResult res = sField.getDescribe();
                 if (res.isUpdateable()||res.isCreateable()||res.isCustom()) {
-                    // tempLabelName.add(res.getLabel());
-                    // tempApiName.add(res.getName());
                     listOfField.put(res.getName(),res.getLabel());
                 }
             }
         }
-        // tempApiName.sort();
-        // tempLabelName.sort();
-        // for(Integer i=0;i<tempApiName.size();i++){
-        //     listOfField.put(tempApiName.get(i),tempLabelName.get(i));
-        // }
+        
         return listOfField;
     }
     /** 
@@ -66,8 +59,12 @@ public with sharing class CustomDataTableAuraPagination {
      Return Type:WrapperClass
     **/
     @AuraEnabled
-    public static list<WrapperClass> dataForTable(String selectedObject,List<String> selectedField,Integer pageNumber,Integer pageSize, String sortingField, String sortBy){
-
+    public static list<WrapperClass> dataForTable(String selectedObject,List<String> selectedField,Integer pageNumber,Integer pageSize, String sortingField, String sortBy, List<Id> recordsID){
+        System.debug(recordsID);   
+        Set<Id> recordsIdss=new Set<Id>();
+            for(Id rec:recordsID){
+                recordsIdss.add(rec);
+            }
             String allFieldsForQuery = '';
             for(Integer i = 0;i<selectedField.size();i++){
                if(i==selectedField.size()-1){
@@ -79,22 +76,23 @@ public with sharing class CustomDataTableAuraPagination {
             }
             // AggregateResult[] tr = Database.query('SELECT count(id)total from '+selectedObject);
             Integer offset = (pageNumber-1)*pageSize;
-            list<sObject> sobjectRecords = Database.query('SELECT '+allFieldsForQuery+' FROM '+selectedObject + ' ORDER BY '+sortingField+' '+sortBy+' '+ 'LIMIT '+pageSize +' OFFSET '+offset);
+            String query='SELECT '+allFieldsForQuery+' FROM '+selectedObject +  ' LIMIT '+pageSize +' OFFSET '+offset;
+            System.debug(query);
+            if(!recordsID.isEmpty()){
+                query='';
+                query='SELECT Id,'+allFieldsForQuery+' FROM '+selectedObject + ' WHERE ID IN :recordsIdss ORDER BY '+sortingField+' '+sortBy+' '+ 'LIMIT '+pageSize;
+                System.debug(query);
+            }
+            list<sObject> sobjectRecords = Database.query(query);
+            System.debug(sobjectRecords);
             List<WrapperClass> wrapperVariableForGettingSobjectRecords = new List<WrapperClass>();
 
             for(sObject a:sobjectRecords) {
                 wrapperVariableForGettingSobjectRecords.add(new WrapperClass(a));
             }
-            // wrapperVariableForGettingSobjectRecords.sobj = sobjectRecords;
             return wrapperVariableForGettingSobjectRecords;
     }
-    // public static list<Wrapper> tempData(List<sObject> temp){
-    //     List<Wrapper> tempData=new List<Wrapper>();
-    //     for(sObject a:temp) {
-    //         tempData.add(new Wrapper(a));
-    //     }
-    //     return tempData;
-    // }
+   
     /** 
      Name: WrapperClass,
      description: class for making dynamically sObject records
